@@ -5,6 +5,8 @@ import {
   View,
   Image,
   ScrollView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import React, { useState } from "react";
 import Button from "@/src/components/Button";
@@ -14,9 +16,9 @@ import { Checkbox, useTheme } from "react-native-paper";
 import Select from "@/src/components/Select";
 
 const businessType = [
-  { label: "Product", value: "product" },
+  { label: "Retail", value: "retail" },
   { label: "Service", value: "service" },
-  { label: "Product & Services", value: "product & service" },
+  { label: "Retail & Services", value: "retail & service" },
 ];
 
 const Register = () => {
@@ -185,6 +187,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     marginHorizontal: 20,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   logo: {
     width: 150,
