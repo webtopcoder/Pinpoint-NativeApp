@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import MapView, { Camera, Marker, Polyline, Region } from "react-native-maps";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, Platform } from "react-native";
 import * as Location from "expo-location";
 import { mapStyle } from "@/src/utils/map";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
@@ -12,6 +11,12 @@ import List from "@/src/components/map/List";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import SelectedLocations from "@/src/components/map/SelectedLocations";
 import { lightColors } from "@/src/utils/colors";
+import MapView, {
+  Marker,
+  Polyline,
+  PROVIDER_GOOGLE,
+} from "@/src/components/mapview/Mapview";
+import { CameraType, RegionType } from "@/src/types/map";
 
 interface LocationCoords {
   latitude: number;
@@ -65,7 +70,7 @@ export default function App() {
         longitude: (location.longitude + selectedLocation.longitude) / 2,
       };
 
-      const camera: Camera = {
+      const camera: CameraType = {
         center: midPoint,
         pitch: 0,
         heading: 0,
@@ -77,7 +82,7 @@ export default function App() {
     }
   }, [location, selectedLocation]);
 
-  const mapRegion: Region | undefined = location
+  const mapRegion: RegionType | undefined = location
     ? {
         latitude: location.latitude,
         longitude: location.longitude,
@@ -98,7 +103,8 @@ export default function App() {
         style={styles.map}
         customMapStyle={mapStyle}
         userInterfaceStyle="light"
-        showsUserLocation={false} // Disable the default blue dot
+        showsUserLocation={false}
+        provider={PROVIDER_GOOGLE}
         region={mapRegion}
       >
         {location && (
