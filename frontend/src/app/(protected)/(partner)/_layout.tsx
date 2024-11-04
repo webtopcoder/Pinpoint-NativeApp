@@ -25,7 +25,6 @@ export default function Layout() {
   if (!user) {
     return <Redirect href="/login" />;
   } else if (user.role !== UserRole.PARTNER) {
-    console.log(user);
     return <Redirect href="/" />;
   }
 
@@ -87,7 +86,7 @@ export default function Layout() {
                         />
                       }
                     >
-                      <AddPost />
+                      {(close) => <AddPost onClose={close} />}
                     </Modal>
                     <Menu.Item
                       leadingIcon="movie-open-play-outline"
@@ -240,7 +239,7 @@ export default function Layout() {
           drawerLabel: "Pinpoint Social",
           drawerIcon: ({ color }) => (
             <Image
-              source={require("../../../../assets/images/logo1.png")}
+              source={require("../../../../assets/images/logo_gray.png")}
               style={[{ height: 24, width: 24 }]}
               resizeMode="contain"
             />

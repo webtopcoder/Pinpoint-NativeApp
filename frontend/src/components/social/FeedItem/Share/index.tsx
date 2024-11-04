@@ -13,24 +13,34 @@ import { Entypo, Ionicons } from "@expo/vector-icons";
 import { Menu } from "react-native-paper";
 import More from "./More";
 import Modal from "@/src/components/modals/modal";
-// import * as Clipboard from "expo-clipboard";
+import * as Clipboard from "expo-clipboard";
+import { useToastNotification } from "@/src/context/ToastNotificationContext";
 
 interface Props {
   buttonStyle?: StyleProp<ViewStyle>;
   icon?: ReactNode;
+  onClose?: () => void;
+  onOpen?: () => void;
 }
 
-const Share: React.FC<Props> = ({ buttonStyle, icon }) => {
+const Share: React.FC<Props> = ({ buttonStyle, icon, onClose, onOpen }) => {
   const [visible, setVisible] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { addNotification } = useToastNotification();
 
-  const openMenu = () => setVisible(true);
+  const openMenu = () => {
+    setVisible(true);
+    onOpen && onOpen();
+  };
 
-  const closeMenu = () => setVisible(false);
+  const closeMenu = () => {
+    setVisible(false);
+    onClose && onClose();
+  };
 
   const copyToClipboard = async () => {
-    // await Clipboard.setStringAsync("http://pinpoint.com");
-    setCopied(true);
+    console.log("coping");
+    await Clipboard.setStringAsync("http://pinpoint.com");
+    addNotification({ message: "Link Copied" });
   };
 
   return (
@@ -66,7 +76,7 @@ const Share: React.FC<Props> = ({ buttonStyle, icon }) => {
           data={[] as string[]}
           ListHeaderComponent={() => (
             <TouchableOpacity
-              onPress={() => copyToClipboard}
+              onPress={copyToClipboard}
               style={{ alignItems: "center", marginRight: 18 }}
             >
               <View
@@ -81,9 +91,7 @@ const Share: React.FC<Props> = ({ buttonStyle, icon }) => {
               >
                 <Ionicons name="link-outline" size={20} />
               </View>
-              <Text style={{ fontSize: 12 }}>
-                {!copied ? "Copy Link" : "Copied"}
-              </Text>
+              <Text style={{ fontSize: 12 }}>Copy Link</Text>
             </TouchableOpacity>
           )}
           renderItem={({ item }) => (
@@ -115,7 +123,7 @@ const Share: React.FC<Props> = ({ buttonStyle, icon }) => {
                 </View>
               }
             >
-              <More />
+              {(close) => <More close={close} />}
             </Modal>
           )}
           keyExtractor={(item) => item.toString()}

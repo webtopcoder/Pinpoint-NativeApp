@@ -1,10 +1,9 @@
 import { Response } from "express";
-import Post from "../models/post";
 import { deleteMediaFromS3, uploadMediaToS3 } from "../utils/media";
-import { ObjectId, Schema } from "mongoose";
+import { ObjectId } from "mongoose";
 import Report, { ReportDocument, ReportType } from "../models/report";
 import { CustomRequest } from "../middleware/auth";
-import Comment from "../models/comment";
+import Post from "../models/post";
 
 export const createPost = async (req: CustomRequest, res: Response) => {
   const { content, location } = req.body;
@@ -16,7 +15,7 @@ export const createPost = async (req: CustomRequest, res: Response) => {
     for (const file of req.files) {
       const mediaType = file.mimetype.startsWith("image") ? "image" : "video";
       mediaUploadPromises.push(
-        uploadMediaToS3(file.path, file.filename, mediaType)
+        uploadMediaToS3(file.buffer, file.filename, mediaType)
       );
     }
   }
@@ -43,7 +42,8 @@ export const createPost = async (req: CustomRequest, res: Response) => {
 export const getAllPost = async (req: CustomRequest, res: Response) => {
   try {
     const posts = await Post.find()
-      .populate("location userId")
+      .populate("location", "locationName address images")
+      .populate("userId", "locationName address images")
       .sort({ createdAt: -1 });
     res.status(200).json(posts);
     return;
@@ -119,7 +119,7 @@ export const updatePost = async (req: CustomRequest, res: Response) => {
             ? "image"
             : "video";
           const uploadResult: any = await uploadMediaToS3(
-            file.path,
+            file.buffer,
             file.filename,
             mediaType
           );
@@ -229,14 +229,6 @@ export const reportPost = async (req: CustomRequest, res: Response) => {
       return;
     }
 
-    // Check if the user already reported the post
-    if (
-      post.reports.some((reportId) => reportId.toString() === userId.toString())
-    ) {
-      res.status(400).json({ message: "You have already reported this post" });
-      return;
-    }
-
     // Create a new report
     const newReport = new Report({
       userId,
@@ -248,11 +240,6 @@ export const reportPost = async (req: CustomRequest, res: Response) => {
 
     // Save the report in the database
     const savedReport: ReportDocument = await newReport.save();
-
-    // Add the report ID to the post's reports array
-
-    const objectId = new Schema.Types.ObjectId(savedReport._id as string);
-    post.reports.push(objectId);
 
     // Save the post after adding the report ID
     await post.save();

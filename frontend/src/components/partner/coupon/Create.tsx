@@ -6,17 +6,27 @@ import MultiSelect from "../../select/MultiSelect";
 import { Feather } from "@expo/vector-icons";
 import Button from "../../Button";
 import { router } from "expo-router";
+import useDimensions from "@/src/hooks/useDimension";
 
-const Create = () => {
+interface Props {
+  onClose?: () => void;
+}
+
+const Create: React.FC<Props> = ({ onClose }) => {
   const [email, setEmail] = useState("");
+  const { isMobile } = useDimensions();
   return (
     <View>
-      <Appbar.Header>
-        {Platform.OS !== "web" && (
-          <Appbar.BackAction onPress={() => router.back()} />
-        )}
-        <Appbar.Content title="Generate Coupon" />
-      </Appbar.Header>
+      {!isMobile && (
+        <Appbar.Header>
+          <Appbar.BackAction
+            onPress={() =>
+              isMobile ? router.back() : onClose ? onClose() : null
+            }
+          />
+          <Appbar.Content title="Generate Coupon" />
+        </Appbar.Header>
+      )}
       <Divider style={{ marginVertical: 20 }} />
       <View style={{ paddingHorizontal: 20 }}>
         <View style={styles.imageCont}>

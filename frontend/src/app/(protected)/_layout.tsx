@@ -1,5 +1,6 @@
 import SplashScreen from "@/src/components/SplashScreen";
 import Onboarding from "@/src/components/onboarding/Onboarding";
+import StoryViewer from "@/src/components/social/stories/StoryViewer";
 import { useAuth } from "@/src/context/Auth";
 import { useUser } from "@/src/context/User";
 import { Redirect } from "expo-router";
@@ -24,17 +25,17 @@ export default function Layout() {
     return <Redirect href="/verify" />;
   }
 
-  // if (user && user === "partner") {
-  //   return <Redirect href="/dashboard" />;
-  // }
-
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="(socialpost)" />
-      <Stack.Screen name="(explores)" />
-      <Stack.Screen name="(menu)" />
-      <Stack.Screen name="(partner)" />
-    </Stack>
+    <>
+      <StoryViewer />
+
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(socialpost)" />
+        <Stack.Screen name="(explores)" />
+        <Stack.Screen name="(menu)" />
+        <Stack.Screen name="(partner)" />
+      </Stack>
+    </>
   );
 }
